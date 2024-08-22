@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+node_modules
+migrations
+db.sqlite3
+poetry.lock
+pycache
