@@ -9,8 +9,8 @@ class FileBlob(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     # the time the file was last accessed
     accessed_at = models.DateTimeField(default=timezone.now)
-    # the key used by the user to retrieve the file
-    user_key = models.CharField(max_length=255)
+    # the key used by the user to retrieve the file 64 char hex string
+    user_key = models.CharField(max_length=64, unique=True)
     # below are fields involved in encryption
     # whether the file is encrypted
     is_encrypted = models.BooleanField(default=False)

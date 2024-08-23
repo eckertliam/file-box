@@ -20,6 +20,6 @@ from .views import retrieve_file, upload_file
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('retrieve_file/', retrieve_file),
-    path('upload_file/', upload_file),
+    path('/retrieve_file', retrieve_file),
+    path('/upload_file', upload_file),
 ]

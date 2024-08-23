@@ -1,3 +1,4 @@
+import secrets
 from typing import Dict
 from Crypto.Cipher import AES
 
@@ -21,3 +22,10 @@ def decrypt_blob(decrypt_data: Dict[str, bytes], password: str) -> bytes:
         return plain_blob
     except ValueError:
         raise ValueError('Key incorrect or message corrupted')
+
+
+# generates a 256-bit key for the user
+def generate_user_key() -> str:
+    return secrets.token_hex(32)
+
+__all__ = ['encrypt_blob', 'decrypt_blob', 'generate_user_key']
