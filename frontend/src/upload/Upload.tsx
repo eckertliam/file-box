@@ -3,7 +3,7 @@ import React, {JSX, useRef} from "react";
 import './Upload.css';
 
 // take a file and returns a compressed blob
-async function compress_file(file: File): Promise<Blob> {
+async function compressFile(file: File): Promise<Blob> {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
     return new Promise<Blob>((resolve, reject) => {
@@ -17,27 +17,41 @@ async function compress_file(file: File): Promise<Blob> {
 }
 
 function Upload(): JSX.Element {
-    const upload_container = document.getElementById('upload-container');
-    const user_key_container = document.getElementById('user-key-container');
-    user_key_container?.style.setProperty('display', 'none');
-
     const fileInput = useRef<HTMLInputElement>(null);
     const passwordInput = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = () => {
-        const file = fileInput.current?.files?.[0];
-        const file_name = document.getElementById('file-name');
-        if (file && file_name) {
-            file_name.textContent = file.name;
+    const resetForm = () => {
+        // reset the file input
+        const file = fileInput.current;
+        if (file) {
+            file.value = '';
+        }
+        // reset the password input
+        const password = passwordInput.current;
+        if (password) {
+            password.value = '';
+        }
+        // reset the file name
+        const fileName = document.getElementById('file-name');
+        if (fileName) {
+            fileName.textContent = '';
         }
     }
 
-    const handleUserKey = (user_key: string) => {
-        upload_container?.style.setProperty('display', 'none');
-        user_key_container?.style.setProperty('display', 'block');
-        const user_key_element = document.getElementById('user-key');
-        if (user_key_element) {
-            user_key_element.textContent = user_key;
+    const handleFileChange = () => {
+        const file = fileInput.current?.files?.[0];
+        const fileName = document.getElementById('file-name');
+        if (file && fileName) {
+            fileName.textContent = file.name;
+        }
+    }
+
+    const handleUserKey = (userKey: string) => {
+        resetForm();
+        console.log(userKey);
+        const userKeyElement = document.getElementById('user-key');
+        if (userKeyElement) {
+            userKeyElement.textContent = `Your file has been uploaded successfully. The user key is: ${userKey}.\nCopy this key and keep it safe. You will need it to retrieve your file.`;
         } else {
             alert('Failed to display user key');
         }
@@ -50,7 +64,7 @@ function Upload(): JSX.Element {
             return;
         }
         const file = fileInput.current.files[0];
-        const compressed = await compress_file(file);
+        const compressed = await compressFile(file);
         const password = passwordInput.current?.value;
         const formData = new FormData();
         formData.append('file', compressed);
@@ -58,7 +72,7 @@ function Upload(): JSX.Element {
             formData.append('password', password);
         }
         // TODO: place the actual api endpoint here
-        const response = await fetch('/upload', {
+        const response = await fetch('/api/upload_file/', {
             method: 'POST',
             body: formData
         });
@@ -100,16 +114,7 @@ function Upload(): JSX.Element {
                     <button id='upload-btn' type="submit">Upload</button>
                 </form>
             </div>
-            <div id='user-key-container'>
-                <p>
-                    Your file has been uploaded. Here is your user key:
-                </p>
-                <p id='user-key'></p>
-                <p>
-                    Keep this key safe. You will need it to retrieve your file.
-                    This is the only chance you will have to see this key.
-                </p>
-            </div>
+            <p id='user-key'></p>
         </div>
     )
 }
