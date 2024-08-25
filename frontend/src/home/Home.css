@@ -10,7 +10,7 @@
 .title {
     width: 100%;
     background-color: #F3DE8A;
-    color: #272838;
+    color: #000000;
     font-size: 1.5em;
     text-align: center;
     padding-top: 1px;
@@ -33,7 +33,6 @@ p {
 
 #home-content button {
     background-color: #F3DE8A;
-    color: #272838;
     font-size: 1.2em;
     padding: 10px;
     margin: 10px;
@@ -43,7 +42,7 @@ p {
 }
 
 #home-content button:hover {
-    background-color: #272838;
-    color: #F3DE8A;
+    background-color: #FFFFFF;
+    color: #000000;
     border: 1px solid #7E7F9A;
 }

@@ -18,6 +18,8 @@ class FileBlob(models.Model):
     nonce = models.BinaryField(null=True)
     # the tag used in encryption
     tag = models.BinaryField(null=True)
+    # the salt used in encryption
+    salt = models.BinaryField(null=True)
 
     def __str__(self):
         return self.user_key

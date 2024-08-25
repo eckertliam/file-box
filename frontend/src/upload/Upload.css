@@ -18,7 +18,7 @@ form {
     height: 75px;
     border: none;
     border-radius: 25px;
-    background: linear-gradient(40deg, #F3DE8A, #272838);
+    background: linear-gradient(45deg, #F3DE8A, #000000);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -28,7 +28,7 @@ form {
 
 #file-input label:hover {
     transform: scale(1.05);
-    background: linear-gradient(40deg, #272838, #F3DE8A);
+    background: linear-gradient(90deg, #F3DE8A, #000000);
 }
 
 #file {
@@ -49,10 +49,10 @@ form {
 
 #password {
     width: 200px;
-    height: 50px;
+    height: 25px;
     padding: 5px;
     font-size: 16px;
-    border: 1px solid;
+    border: none;
     border-radius: 4px;
 }
 
@@ -61,7 +61,7 @@ form {
     height: 50px;
     border: none;
     border-radius: 25px;
-    background: linear-gradient(40deg, #F3DE8A, #272838);
+    background: linear-gradient(45deg, #F3DE8A, #272838);
     cursor: pointer;
     color: #FFFFFF;
     transition: transform .2s ease-out;
@@ -69,7 +69,7 @@ form {
 
 #upload-btn:hover {
     transform: scale(1.05);
-    background: linear-gradient(40deg, #272838, #F3DE8A);
+    background: linear-gradient(90deg, #272838, #F3DE8A);
 }
 
 #file-name {
