@@ -5,6 +5,10 @@ from django.utils import timezone
 class FileBlob(models.Model):
     # the file data
     data = models.BinaryField()
+    # the file name
+    name = models.CharField(max_length=255)
+    # the file extension
+    mime_type = models.CharField(max_length=255)
     # the time the file was created
     created_at = models.DateTimeField(default=timezone.now)
     # the time the file was last accessed

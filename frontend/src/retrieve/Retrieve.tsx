@@ -2,11 +2,28 @@ import pako from "pako";
 import React, {JSX, useRef} from "react";
 import './Retrieve.css';
 
-// decompresses a binary blob
-async function decompress(blob: Blob): Promise<File> {
+// convert base64 string to a blob
+function base64ToBlob(base64: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray]);
+}
+
+// decompresses a binary blob and return the decompressed blob
+async function decompress(blob: Blob): Promise<Blob> {
     const array: Uint8Array = new Uint8Array(await blob.arrayBuffer());
     const decompressed = pako.inflate(array);
-    return new File([decompressed], "decompressed");
+    return new Blob([decompressed]);
+}
+
+// takes a binary blob, file name, and mime type. First decompresses the blob, then returns the file
+async function buildFile(blob: Blob, fileName: string, mimeType: string): Promise<File> {
+    const decompressed: Blob = await decompress(blob);
+    return new File([decompressed], fileName, {type: mimeType});
 }
 
 function Retrieve(): JSX.Element {
@@ -39,30 +56,25 @@ function Retrieve(): JSX.Element {
         if (password) {
             formData.append('password', password);
         }
-        const response = await fetch('api/retrieve_file/', {
+        fetch('/api/retrieve_file/', {
             method: 'POST',
-            body: formData
+            body: formData,
+        }).then(response => response.json()).then(async data => {
+            const binary = base64ToBlob(data.file);
+            const file = await buildFile(binary, data.file_name, data.mime_type);
+            const fileUrl = URL.createObjectURL(file);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = fileUrl;
+            downloadLink.download = file.name;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(fileUrl);
+            resetForm();
+        }).catch(error => {
+            console.error('Failed to retrieve file:', error);
+            alert('Failed to retrieve file');
         });
-        if (response.status !== 200) {
-            alert(`Error: ${response.status} ${response.statusText}`);
-            return;
-        }
-        resetForm();
-        // get the binary file from the response
-        // the file comes as a base64 encoded string
-        // so first decode the string to a blob
-        const bin64 = await response.text();
-        const bin = atob(bin64);
-        const array = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) {
-            array[i] = bin.charCodeAt(i);
-        }
-        const fileBlob = new Blob([array]);
-        // decompress the file
-        const file = await decompress(fileBlob);
-        // create a URL for the file
-        const url = URL.createObjectURL(file);
-        console.log(url);
     }
 
     return (

@@ -6,14 +6,42 @@ import './Upload.css';
 async function compressFile(file: File): Promise<Blob> {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
-    return new Promise<Blob>((resolve, reject) => {
-        reader.onload = function() {
-            const data = new Uint8Array(reader.result as ArrayBuffer);
-            const compressed = pako.deflate(data);
-            resolve(new Blob([compressed]));
+    return new Promise((resolve, reject) => {
+        reader.onload = () => {
+            const arrayBuffer = reader.result;
+            if (arrayBuffer instanceof ArrayBuffer) {
+                const compressed = pako.deflate(arrayBuffer);
+                resolve(new Blob([compressed]));
+            } else {
+                reject('Failed to read file');
+            }
         }
-        reader.onerror = reject;
-    })
+        reader.onerror = () => {
+            reject(reader.error);
+        }
+    });
+}
+
+async function buildFormData(file: File, password?: string): Promise<FormData> {
+    // first compress the file
+    const compressedFile: Blob = await compressFile(file);
+    // get file mime type
+    const mimeType: string = file.type;
+    // get file name
+    const fileName: string = file.name;
+    // create a new FormData object
+    const formData = new FormData();
+    // append the compressed file
+    formData.append('file', compressedFile);
+    // append the file name
+    formData.append('file_name', fileName);
+    // append the file mime type
+    formData.append('mime_type', mimeType);
+    // if a password was provided, append it
+    if (password) {
+        formData.append('password', password);
+    }
+    return formData;
 }
 
 function Upload(): JSX.Element {
@@ -63,29 +91,17 @@ function Upload(): JSX.Element {
             alert('No file selected');
             return;
         }
-        const file = fileInput.current.files[0];
-        const compressed = await compressFile(file);
-        const password = passwordInput.current?.value;
-        const formData = new FormData();
-        formData.append('file', compressed);
-        if (password) {
-            formData.append('password', password);
-        }
-        // TODO: place the actual api endpoint here
-        const response = await fetch('/api/upload_file/', {
+        const file: File = fileInput.current.files[0];
+        const password: string | undefined = passwordInput.current?.value;
+        const formData = await buildFormData(file, password);
+        fetch('/api/upload_file/', {
             method: 'POST',
             body: formData
+        }).then(response => response.json()).then(data => {
+           handleUserKey(data.user_key);
+        }).catch(error => {
+            alert('Failed to upload file ' + error);
         });
-        if (!response.ok) {
-            alert(`Error: ${response.status} ${response.statusText}`);
-            return;
-        }
-        const data = await response.json();
-        if (!data.user_key) {
-            alert('Failed to upload file no user key');
-            return;
-        }
-        handleUserKey(data.user_key);
     }
 
     return (
