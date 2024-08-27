@@ -1,0 +1,7 @@
+.primary-button {
+    border: 1px solid #000000;
+    border-radius: 5px;
+    background-color: #F4F4F9;
+    width: 200px;
+    height: 50px;
+}

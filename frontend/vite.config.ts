@@ -16,5 +16,6 @@ export default defineConfig({
     build: {
         outDir: './dist',
     },
+    base: '/file-box/',
     plugins: [react()],
 })

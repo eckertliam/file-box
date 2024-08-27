@@ -30,19 +30,3 @@ p {
     text-align: center;
     font-size: 1.2em;
 }
-
-#home-content button {
-    background-color: #F3DE8A;
-    font-size: 1.2em;
-    padding: 10px;
-    margin: 10px;
-    border: 1px solid #7E7F9A;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#home-content button:hover {
-    background-color: #FFFFFF;
-    color: #000000;
-    border: 1px solid #7E7F9A;
-}

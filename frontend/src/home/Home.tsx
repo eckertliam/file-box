@@ -1,5 +1,5 @@
 import {JSX} from "react";
-import { Link }  from "react-router-dom";
+import LinkButton from "../buttons/LinkButton.tsx";
 import './Home.css';
 
 function Home(): JSX.Element {
@@ -15,12 +15,8 @@ function Home(): JSX.Element {
                     You can also choose to encrypt your files with a password.
                 </p>
                 <div id='home-options'>
-                    <Link to='/upload'>
-                        <button>Upload</button>
-                    </Link>
-                    <Link to='/retrieve'>
-                        <button>Retrieve</button>
-                    </Link>
+                    <LinkButton to='/upload' text='Upload'/>
+                    <LinkButton to='/retrieve' text='Retrieve'/>
                 </div>
             </div>
         </div>
