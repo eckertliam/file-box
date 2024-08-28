@@ -1,13 +1,12 @@
 import {JSX} from "react";
 import LinkButton from "../buttons/LinkButton.tsx";
 import './Home.css';
+import Heading from "../Heading/Heading.tsx";
 
 function Home(): JSX.Element {
     return (
         <div className='container'>
-            <div className='title'>
-                <h1>File Box</h1>
-            </div>
+            <Heading text='File Box'/>
             <div id='home-content'>
                 <p>
                     File box is a simple, secure, and private file storage service.

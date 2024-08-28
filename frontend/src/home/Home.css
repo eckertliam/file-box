@@ -7,17 +7,6 @@
     height: 100%;
 }
 
-.title {
-    width: 100%;
-    background-color: #F3DE8A;
-    color: #000000;
-    font-size: 1.5em;
-    text-align: center;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    margin-bottom: 10px;
-}
-
 #home-content {
     width: 100%;
     padding: 20px;
