@@ -1,6 +1,9 @@
 import pako from "pako";
-import React, {JSX, useRef} from "react";
+import {JSX, useRef} from "react";
 import './Retrieve.css';
+import LinkButton from "../buttons/LinkButton.tsx";
+import Heading from "../Heading/Heading.tsx";
+import PrimaryButton from "../buttons/PrimaryButton.tsx";
 
 // convert base64 string to a blob
 function base64ToBlob(base64: string): Blob {
@@ -43,8 +46,7 @@ function Retrieve(): JSX.Element {
         }
     }
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         const userKey = userKeyInput.current?.value;
         const password = passwordInput.current?.value;
         if (!userKey) {
@@ -62,12 +64,14 @@ function Retrieve(): JSX.Element {
         }).then(response => response.json()).then(async data => {
             const binary = base64ToBlob(data.file);
             const file = await buildFile(binary, data.file_name, data.mime_type);
+            // create a URL for downloading the file then click the link to download
             const fileUrl = URL.createObjectURL(file);
             const downloadLink = document.createElement('a');
             downloadLink.href = fileUrl;
             downloadLink.download = file.name;
             document.body.appendChild(downloadLink);
             downloadLink.click();
+            // cleanup
             document.body.removeChild(downloadLink);
             URL.revokeObjectURL(fileUrl);
             resetForm();
@@ -79,16 +83,15 @@ function Retrieve(): JSX.Element {
 
     return (
         <div className='container'>
-            <div className='title'>
-                <h2>Retrieve</h2>
-            </div>
+            <Heading text='Retrieve'/>
+            <LinkButton text='Home' to='/' />
             <p>Retrieve a file using a user key</p>
-            <form id='retrieve-form' onSubmit={handleSubmit}>
+            <form id='retrieve-form' onSubmit={e => e.preventDefault()}>
                 <label htmlFor='user-key'>User Key: </label>
                 <input type='text' id='user-key' required={true} ref={userKeyInput}/>
                 <br/>
                 <input type='password' id='password' placeholder='Password' ref={passwordInput}/>
-                <button type='submit'>Retrieve</button>
+                <PrimaryButton text='Retrieve' fn={handleSubmit}/>
             </form>
         </div>
     );
