@@ -1,8 +1,9 @@
 import pako from 'pako';
-import React, {JSX, useRef} from "react";
+import {JSX, useRef} from "react";
 import './Upload.css';
 import LinkButton from "../buttons/LinkButton.tsx";
 import PrimaryButton from "../buttons/PrimaryButton.tsx";
+import Heading from "../Heading/Heading.tsx";
 
 // take a file and returns a compressed blob
 async function compressFile(file: File): Promise<Blob> {
@@ -49,6 +50,9 @@ async function buildFormData(file: File, password?: string): Promise<FormData> {
 function Upload(): JSX.Element {
     const fileInput = useRef<HTMLInputElement>(null);
     const passwordInput = useRef<HTMLInputElement>(null);
+    const keyElement = useRef<HTMLDivElement>(null);
+    const userKeyText = useRef<HTMLParagraphElement>(null);
+    const fileBtn = document.getElementById('file-btn');
 
     const resetForm = () => {
         // reset the file input
@@ -62,28 +66,28 @@ function Upload(): JSX.Element {
             password.value = '';
         }
         // reset the file name
-        const fileName = document.getElementById('file-btn');
-        if (fileName) {
-            fileName.textContent = 'Select File';
+        if (fileBtn) {
+            fileBtn.textContent = 'Select File';
         }
     }
 
     const handleFileChange = () => {
         const file = fileInput.current?.files?.[0];
-        const fileName = document.getElementById('file-btn');
-        if (file && fileName) {
-            fileName.textContent = file.name;
+        if (file && fileBtn) {
+            fileBtn.textContent = file.name;
         }
     }
 
     const handleUserKey = (userKey: string) => {
         resetForm();
-        console.log(userKey);
-        const userKeyElement = document.getElementById('user-key');
-        if (userKeyElement) {
-            userKeyElement.textContent = `Your file has been uploaded successfully. The user key is: ${userKey}.\nCopy this key and keep it safe. You will need it to retrieve your file.`;
-        } else {
-            alert('Failed to display user key');
+        const keyContainer = keyElement.current;
+        // display key element
+        if (keyContainer) {
+            keyContainer.style.display = 'block';
+        }
+        const keyText = userKeyText.current;
+        if (keyText) {
+            keyText.textContent = userKey;
         }
     }
 
@@ -98,8 +102,8 @@ function Upload(): JSX.Element {
         fetch('/api/upload_file/', {
             method: 'POST',
             body: formData
-        }).then(response => response.json()).then(data=> {
-           handleUserKey(data.user_key);
+        }).then(response => response.json()).then(data => {
+            handleUserKey(data.user_key);
         }).catch(error => {
             alert('Failed to upload file ' + error);
         });
@@ -107,30 +111,28 @@ function Upload(): JSX.Element {
 
     return (
         <div className='container'>
-            <div className='title'>
-                <h2>Upload</h2>
+            <Heading text='Upload'/>
+            <LinkButton text='Home' to='/'/>
+            <p>
+                The file will be compressed before being uploaded.
+                <br/>
+                Optionally, you can provide a password to encrypt the file.
+            </p>
+            <form onSubmit={e => {e.preventDefault();}}>
+                <input type="file" id='file' ref={fileInput} required={true} onChange={handleFileChange}/>
+                <PrimaryButton id='file-btn' text='Select File' fn={() => fileInput.current?.click()}/>
+                <br/>
+                <div id='password-input'>
+                    <input id='password' type="password" ref={passwordInput} placeholder='Password'/>
+                </div>
+                <br/>
+                <PrimaryButton text='Upload' fn={handleSubmit}/>
+            </form>
+            <div id='user-key' ref={keyElement}>
+                <h2>User Key:</h2>
+                <p ref={userKeyText}></p>
+                <p>Keep this key safe and be sure to copy it down now, this is your one chance.</p>
             </div>
-            <LinkButton text='Home' to='/' />
-            <div id='upload-container'>
-                <p>
-                    The file will be compressed before being uploaded.
-                    <br/>
-                    Optionally, you can provide a password to encrypt the file.
-                </p>
-                <form onSubmit={() => {}}>
-                    <div id='file-input'>
-                        <input type="file" id='file' ref={fileInput} required={true} onChange={handleFileChange}/>
-                        <PrimaryButton id='file-btn' text='Select File' fn={() => fileInput.current?.click()}/>
-                    </div>
-                    <br/>
-                    <div id='password-input'>
-                        <input id='password' type="password" ref={passwordInput} placeholder='Password'/>
-                    </div>
-                    <br/>
-                    <PrimaryButton text='Upload' fn={handleSubmit}/>
-                </form>
-            </div>
-            <p id='user-key'></p>
         </div>
     )
 }
